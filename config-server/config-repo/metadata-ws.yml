@@ -1,0 +1,5 @@
+server:
+  port: 8081
+datakow:
+  rabbit:
+    appExchangeName: e.service.metadata-ws

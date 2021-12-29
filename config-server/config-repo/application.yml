@@ -1,0 +1,49 @@
+endpoints:
+  cors:
+    allowed-headers: '*'
+    allowed-methods: '*'
+    allowed-origins: '*'
+  jmx:
+    unique-names: true
+logging:
+  level:
+    org:
+      datakow: DEBUG
+      datakow.apps.metadatacatalogwebservice: INFO
+datakow:
+  catalogs:
+    catalogRegistryCacheTimeInMinutes: 1
+    catalogRegistryIncludeIndexes: false
+    metadataCatalogWebservicePort: 8081
+    metadataCatalogWebserviceClientConnectTimeout: 1000
+    metadataCatalogWebserviceClientReadTimeout: 30000
+    objectCatalogWebservicePort: 8082
+    objectCatalogWebserviceClientConnectTimeout: 1000
+    objectCatalogWebserviceClientReadTimeout: 60000
+    webservicePassword: datakow
+    webserviceUsername: datakow
+  mongo:
+    connPerHost: 100
+    databaseName: datakow
+    objectCatalogCollectionName: DATAKOW_OBJECTS
+    observationStationCollectionName: ObservationStations
+    port: 27017
+    threadBlockMultiplier: 20
+    useAuth: false
+    userName: root
+    password: example
+  rabbit:
+    appId: guest
+    eventsExchangeName: e.events
+    messagingVersion: v5
+    password: guest
+    servicesClientsExchangeName: e.services.clients
+    servicesExchangeName: e.services
+    virtualHost: /
+  subscription:
+    webservicePort: 8083
+    webservicePassword: datakow
+    webserviceUsername: datakow
+spring:
+  jmx:
+    default-domain: ${spring.application.name}

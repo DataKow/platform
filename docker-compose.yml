@@ -1,0 +1,137 @@
+version: "2"
+
+services:
+
+    # fancy-dns:
+  #   image: defreitas/dns-proxy-server
+  #   container_name: fancy-dns
+  #   hostname: fancy-dns
+  #   networks:
+  #     - datakow
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock"
+  #     - "/etc/resolv.conf:/etc/resolv.conf"
+  #   ports:
+  #     - "5380:5380"
+
+  eureka-server:
+    build: eureka-server
+    hostname: eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  config-server:
+    build: config-server
+    hostname: config-server
+    container_name: config-server
+    ports:
+      - "8888:8888" # configuration endpoints
+      - "9001:9001" # actuator endpoints
+
+  mongo-db:
+    image: mongo:3.2.5
+    container_name: mongo-db
+    hostname: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./mongodata:/data/db"
+      
+  rabbit-mq:
+    image: rabbitmq:3-management-alpine
+    hostname: rabbit-mq
+    container_name: rabbit-mq
+    ports:
+        - 5672:5672
+        - 15672:15672
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
+    hostname: elasticsearch
+    container_name: elasticsearch
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  graylog:
+    image: graylog/graylog:4.0
+    hostname: graylog
+    container_name: graylog
+    environment:
+      # CHANGE ME (must be at least 16 characters)!
+      - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+      # Password: admin
+      - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+      - GRAYLOG_HTTP_ENABLE_CORS=true
+    entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
+    restart: always
+    links:
+      - mongo-db:mongo
+      - elasticsearch
+    depends_on:
+      - mongo-db
+      - elasticsearch
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+
+  metadata-ws:
+    build: metadata-ws
+    hostname: metadata-ws
+    container_name: metadata-ws
+    ports:
+      - "8081:8081"
+    environment:
+      - spring_profiles_active=docker
+  
+  object-ws:
+    build: object-ws
+    hostname: object-ws
+    container_name: object-ws
+    ports:
+      - "8082:8082"
+    environment:
+      - spring_profiles_active=docker
+
+  subscription-ws:
+    build: subscription-ws
+    hostname: subscription-ws
+    container_name: subscription-ws
+    ports:
+      - "8083:8083"
+    environment:
+      - spring_profiles_active=docker
+
+  notification-router:
+    build: notification-router
+    hostname: notification-router
+    container_name: notification-router
+    ports:
+      - "8084:8084"
+    environment:
+      - spring_profiles_active=docker
+
+  management-ws:
+    build: management-ws
+    hostname: management-ws
+    container_name: management-ws
+    ports:
+      - "8085:8085"
+    environment:
+      - spring_profiles_active=docker

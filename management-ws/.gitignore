@@ -1,0 +1,32 @@
+# VsCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+#Java
+out
+server
+node_modules
+*.vsix
+.DS_Store
+.vscode-test
+undefined
+target
+dist
+bin/
+.settings
+.classpath
+.project
+test/resources/projects/**/.vscode
+test/resources/projects/maven/salut/testGradle
+.factorypath
+
+#Netbeans
+nbactions.xml
+nbproject

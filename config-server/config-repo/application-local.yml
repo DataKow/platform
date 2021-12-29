@@ -1,0 +1,15 @@
+datakow:
+  environment: local
+  catalogs:
+    metadataCatalogWebserviceHost: localhost
+    objectCatalogWebserviceHost: localhost
+  mongo:
+    servers: localhost
+  rabbit:
+    hostName: localhost
+  subscription:
+    webserviceHost: localhost
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

@@ -1,0 +1,84 @@
+#top{
+    margin-bottom: 10px;
+}
+#title{
+    font-size: 20pt;
+    text-align: center;
+}
+#backContainer{
+    margin-bottom:5px;
+}
+
+.sectionTitle{
+    font-size:15pt;
+}
+.sectionContainer{
+    border: 2px solid black;
+    border-radius: 20px;
+    box-shadow: 10px 10px 5px #888888;
+    margin: 20px auto;
+    padding: 14px;
+    width: 800px;
+}
+
+.indexDiv{
+    float: left;
+    margin: 0 5px 5px 0;
+}
+.indexTable{
+    border: 2px solid black;
+    border-collapse: collapse;
+    width: 394px;
+}
+
+.indexTable td{
+    padding: 1px;
+    border: 1px solid black;
+}
+
+.policyDiv{
+    margin-bottom: 5px;
+}
+.policyTable{
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+
+#tblRetention{
+    margin-top:5px;
+}
+
+.policyTable td{
+    padding: 1px;
+    border: 1px solid black;
+}
+
+.indexTable .fieldsCol{
+    vertical-align: top;
+}
+
+.indexField{
+    border-collapse: collapse;
+}
+indexField td{
+    padding: 1px;
+    border: 1px solid black;
+}
+.action{
+    color:blue;
+    text-decoration: underline;
+    cursor: pointer;
+    float:left;
+    margin-right: 15px;
+}
+.copyText{
+    width:300px;
+}
+#tblMakeACopy{
+    border-collapse: collapse;
+}
+
+#tblMakeACopy td{
+    padding:5px;
+    border: 1px solid black;
+}

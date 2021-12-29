@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Catalogs</title>
+        <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+        <script type='text/javascript' src="../../js/jquery-3.0.0.min.js"></script>
+        <script type='text/javascript' src="../../js/catalog-management-api.js"></script>
+        <script type='text/javascript' src="../../js/catalogs.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="top">
+                <div id="title">Catalogs</div>
+            </div>
+            <div id="content">
+                <div id="newCatalogContainer">
+                    <div id="newCatalogContainerTitle">Create New Catalog</div>
+                    <table>
+                        <tr>
+                            <td>Catalog Name</td>
+                            <td><input type="text" id="txtCatalogName" /></td>
+                        </tr>
+                        <tr>
+                            <td>Index Storage Object</td>
+                            <td><input type="checkbox" id="chkIndexStorageObject" checked="checked" /></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><input type="button" value="Create" onClick="createCatalog()" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="catalogs"></div>
+                <div style="clear:both"></div>
+                
+            </div>
+        </div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function(){
+                var baseUrl = [[${baseUrl}]];
+                var userName = [[${userName}]];
+                var password = [[${password}]];
+                catalogManager.init(baseUrl);
+                fillCatalogNames(userName, password);
+            });
+            /*]]>*/
+        </script>
+        
+    </body>
+</html>

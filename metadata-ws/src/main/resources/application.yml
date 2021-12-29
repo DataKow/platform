@@ -1,0 +1,9 @@
+spring:
+  cloud:
+    config:
+      enabled: true
+  application:
+    name: metadata-ws
+  config:
+    import: configserver:http://${CONFIG_SERVER_HOST:config-server}:${CONFIG_SERVER_PORT:8888}?fail-fast=true&max-attempts=10&max-interval=1500&multiplier=1.2&initial-interval=1100
+

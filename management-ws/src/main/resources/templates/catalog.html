@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Catalog</title>
+        <link rel="stylesheet" type="text/css" href="../../css/catalog.css" />
+        <script type='text/javascript' src="../../js/jquery-3.0.0.min.js"></script>
+        <script type='text/javascript' src="../../js/catalog-management-api.js"></script>
+        <script type='text/javascript' src="../../js/catalog.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="top">
+                <div id="title" th:text="${catalogName}"></div>
+            </div>
+            <div id="content">
+                
+                <div id="backContainer">
+                    <a href="/catalogs">Back to Catalog Listings</a>
+                </div>
+                <div class="sectionContainer">
+                    <div class="sectionTitle">Indexes</div>
+                    <a th:href="'/catalogs/'+${catalogName}+'/indexes/new'">Create New Index</a>
+                    <div id="tblIndexes"></div>
+                    <div style="clear:both"></div>
+                </div>
+                
+                <div class="sectionContainer">
+                    <div class="sectionTitle">Data Retention</div>
+                    <a th:href="'/catalogs/'+${catalogName}+'/retention'">Modify Data Retention Policy</a>
+                    <div id="tblRetention"></div>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="sectionContainer">
+                    <div class="sectionTitle">Copy this catalog</div>
+                    <table id="tblMakeACopy">
+                        <tr>
+                            <td><label>And name it</label></td>
+                            <td><input type="text" class="copyText" id="txtDestCatalog" /></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td><input type="button" id="btnMakeACopy" value="Make a copy" onclick="makeACopy()" /></td>
+                        </tr>
+                    </table>
+                    <div style="clear:both"></div>
+                </div>
+                <div class="sectionContainer">
+                    <div class="sectionTitle">Delete Catalog</div>
+                    <input type="button" value="DELETE CATALOG" onclick="deleteCatalog()"/>
+                </div>
+            </div>
+        </div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function(){
+                var catalogName = [[${catalogName}]];
+                var baseUrl = [[${baseUrl}]];
+                var userName = [[${userName}]];
+                var password = [[${password}]];
+                catalogManager.init(baseUrl);
+                fillCatalog(catalogName, userName, password);
+            });
+            /*]]>*/
+        </script>
+    </body>
+</html>

@@ -1,0 +1,62 @@
+#container{
+    
+}
+#top{
+    margin-bottom: 10px;
+}
+#title{
+    font-size: 20pt;
+    text-align: center;
+}
+#content{
+    
+}
+#catalogs{
+    margin: 0 auto;
+    width: 1315px;
+}
+#newCatalogContainer{
+    border: 1px solid black;
+    border-radius: 20px;
+    box-shadow: 10px 10px 5px #888888;
+    font-size: 16pt;
+    margin: 0 auto 36px;
+    padding: 5px;
+    width: 400px;
+}
+#catalogTable{
+    border-collapse: collapse;
+}
+#catalogTable td{
+    padding:2px;
+    border: 1px solid black;
+}
+.floater{
+    border: 1px solid black;
+    border-radius: 20px;
+    box-shadow: 10px 10px 5px #888888;
+    float: left;
+    margin: 7px;
+    padding: 5px;
+    text-align: center;
+    width: 410px;
+}
+.tblIndexes{
+    
+}
+.tblIndex{
+    margin-bottom:2px;
+    border:3px solid black;
+}
+.tblField{
+    border: 1px solid black;
+    margin-bottom:2px;
+}
+.btnLink{
+    text-decoration: underline;
+    color:blue;
+    cursor:pointer;
+}
+input[type=text]{
+    width:250px;
+}

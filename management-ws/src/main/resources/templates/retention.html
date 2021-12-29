@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Retention</title>
+        <link rel="stylesheet" type="text/css" href="../../css/retention.css" />
+        <script type='text/javascript' src="../../js/jquery-3.0.0.min.js"></script>
+        <script type='text/javascript' src="../../js/catalog-management-api.js"></script>
+        <script type='text/javascript' src="../../js/retention.js"></script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="top">
+                <div id="title" th:text="${catalogName}+' Retention Policy'"></div>
+            </div>
+            <div id="content">
+                
+                <div id="backContainer">
+                    <a th:href="'/catalogs/'+${catalogName}" th:text="'Back to Catalog: '+${catalogName}"></a>
+                </div>
+                <div id="saveButtonContainer">
+                    <input type="button" value="Save Retention Policy Set" onClick="savePolicy()" />
+                </div>
+                <div id="retentionContainer"></div>
+                <div id="addPolicy" onclick="addPolicy()">Add Another Policy</div>
+            </div>
+        </div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function(){
+                var catalogName = [[${catalogName}]];
+                var baseUrl = [[${baseUrl}]];
+                var userName = [[${userName}]];
+                var password = [[${password}]];
+                catalogManager.init(baseUrl);
+                fillRetention(catalogName, userName, password);
+            });
+            /*]]>*/
+        </script>
+    </body>
+</html>

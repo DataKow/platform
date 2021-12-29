@@ -1,0 +1,5 @@
+server:
+  port: 8084
+datakow:
+  rabbit:
+    appExchangeName: e.service.notification-router
