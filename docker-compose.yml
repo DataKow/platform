@@ -2,12 +2,10 @@ version: "2"
 
 services:
 
-    # fancy-dns:
+  # fancy-dns:
   #   image: defreitas/dns-proxy-server
   #   container_name: fancy-dns
   #   hostname: fancy-dns
-  #   networks:
-  #     - datakow
   #   volumes:
   #     - "/var/run/docker.sock:/var/run/docker.sock"
   #     - "/etc/resolv.conf:/etc/resolv.conf"
@@ -36,20 +34,22 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - "./mongodata:/data/db"
+      - mongodata:/data/db
       
   rabbit-mq:
     image: rabbitmq:3-management-alpine
     hostname: rabbit-mq
     container_name: rabbit-mq
     ports:
-        - 5672:5672
-        - 15672:15672
+      - 5672:5672
+      - 15672:15672
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.2
     hostname: elasticsearch
     container_name: elasticsearch
+    volumes:
+      - elasticsearchdata:/usr/share/elasticsearch/data
     environment:
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -59,9 +59,10 @@ services:
       memlock:
         soft: -1
         hard: -1
+    mem_limit: 1g
 
   graylog:
-    image: graylog/graylog:4.0
+    image: graylog/graylog:4.2
     hostname: graylog
     container_name: graylog
     environment:
@@ -69,10 +70,12 @@ services:
       - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
       # Password: admin
       - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9000/
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
       - GRAYLOG_HTTP_ENABLE_CORS=true
     entrypoint: /usr/bin/tini -- wait-for-it elasticsearch:9200 --  /docker-entrypoint.sh
     restart: always
+    volumes:
+      - graylogdata:/usr/share/graylog/data
     links:
       - mongo-db:mongo
       - elasticsearch
@@ -82,12 +85,6 @@ services:
     ports:
       # Graylog web interface and REST API
       - 9000:9000
-      # Syslog TCP
-      - 1514:1514
-      # Syslog UDP
-      - 1514:1514/udp
-      # GELF TCP
-      - 12201:12201
       # GELF UDP
       - 12201:12201/udp
 
@@ -135,3 +132,11 @@ services:
       - "8085:8085"
     environment:
       - spring_profiles_active=docker
+
+volumes:
+  graylogdata:
+    driver: local
+  mongodata:
+    driver: local
+  elasticsearchdata:
+    driver: local
