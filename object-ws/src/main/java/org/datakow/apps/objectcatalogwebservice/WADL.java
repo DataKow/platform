@@ -41,7 +41,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * @author kevin.off
  */
 @RestController
-@RequestMapping(value={"/", "/objws/v1"})
+@RequestMapping(value={"/"})
 public class WADL {
     
     String xs_namespace="http://www.w3.org/2001/XMLSchema" ;

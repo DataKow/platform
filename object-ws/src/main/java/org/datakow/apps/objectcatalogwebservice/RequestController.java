@@ -5,7 +5,6 @@ import com.mongodb.client.result.UpdateResult;
 
 import org.datakow.apps.objectcatalogwebservice.exception.InvalidRequestParameterException;
 import org.datakow.apps.objectcatalogwebservice.exception.MissingContentTypeException;
-import org.datakow.apps.objectcatalogwebservice.exception.SourceRecordNotFoundException;
 import org.datakow.apps.objectcatalogwebservice.exception.UnauthorizedException;
 import org.datakow.core.components.Base64OutputStream;
 import org.datakow.catalogs.object.database.MongoDBObjectCatalogDao;
@@ -68,7 +67,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @RestController
 @CrossOrigin
-@RequestMapping(value = {"/", "/objws/v1"})
+@RequestMapping(value = {"/"})
 public class RequestController {
 
     @Autowired
@@ -117,7 +116,7 @@ public class RequestController {
             @RequestParam(value = "limit", required = false, defaultValue = "-1") int limit,
             @RequestParam(value = "findOne", required = false, defaultValue = "false") boolean findOne,
             @RequestParam(value = "s", required = false, defaultValue = "") String fiql,
-            @PathVariable("catalogName") String catalogIdentifier,
+            @PathVariable(value = "catalogName") String catalogIdentifier,
             @RequestParam(value = "collectionFormat", required = false, defaultValue = "json") String collectionFormat,
             @RequestHeader(value = "boundary", required = false, defaultValue = "") String boundary,
             @RequestParam(value = "dataCoherence", required = false, defaultValue = "available") String dataCoherence,
@@ -152,7 +151,7 @@ public class RequestController {
     public ResponseEntity create(HttpServletRequest request, 
             HttpServletResponse response, 
             @PathVariable("catalogName") String catalogIdentifier,
-            @RequestHeader(value = "metadata-catalog-identifiers", required = false) String metadataCatalogIdentifiersString,
+            //@RequestHeader(value = "metadata-catalog-identifiers", required = false) String metadataCatalogIdentifiersString,
             @RequestHeader Map<String, String> headers) throws JsonProcessingException, IOException {
 
 
@@ -171,7 +170,7 @@ public class RequestController {
         if (objectMetadataIdentitiesString == null) objectMetadataIdentitiesString = headers.get("Metadata-Identities");
         String tags = headers.get("Tags");
         if (tags == null) tags = headers.get("Tags");
-        if (metadataCatalogIdentifiersString == null) metadataCatalogIdentifiersString = headers.get("Metadata-Catalog-Identifiers");
+        //if (metadataCatalogIdentifiersString == null) metadataCatalogIdentifiersString = headers.get("Metadata-Catalog-Identifiers");
         
         
         if (!accessManager.canWrite(SecurityContextHolder.getContext().getAuthentication(), realm, null)){
@@ -208,9 +207,9 @@ public class RequestController {
         if (StringUtils.hasText(tags)) {
             obj.setTags(Arrays.asList(tags.split(",")));
         }
-        if (StringUtils.hasText(metadataCatalogIdentifiersString)){
-            obj.setMetadataCatalogIdentifiers(metadataCatalogIdentifiersString.split(","));
-        }
+        // if (StringUtils.hasText(metadataCatalogIdentifiersString)){
+        //     obj.setMetadataCatalogIdentifiers(metadataCatalogIdentifiersString.split(","));
+        // }
         
         CatalogIdentity savedToDatabase = objectCatalogDao.create(obj);
         
@@ -245,8 +244,6 @@ public class RequestController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create("/catalogs/" + catalogIdentifier + "/objects/" + recordIdentifier));
         return new ResponseEntity("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.CREATED);
-
-        
     }
 
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/objects", method=RequestMethod.PATCH, 
@@ -431,8 +428,8 @@ public class RequestController {
                             out.println("\"" + headerName + "\":" + record.getObjectMetadataIdentities().toJson() + ",");
                         }else if(headerName.equals("Tags")){
                             out.println("\"" + headerName + "\":[" + record.getTags().stream().map(tag -> "\"" + tag + "\"").collect(Collectors.joining(",")) + "],");
-                        }else if(headerName.equals("Metadata-Catalog-Identifiers")){
-                            out.println("\"" + headerName + "\":[" + record.getMetadataCatalogIdentifiers().stream().map(identifier -> "\"" + identifier + "\"").collect(Collectors.joining(",")) + "],");
+                        // }else if(headerName.equals("Metadata-Catalog-Identifiers")){
+                        //     out.println("\"" + headerName + "\":[" + record.getMetadataCatalogIdentifiers().stream().map(identifier -> "\"" + identifier + "\"").collect(Collectors.joining(",")) + "],");
                         }else{
                             out.println("\"" + headerName + "\":\"" + headers.getFirst(headerName) + "\",");
                             
@@ -615,9 +612,9 @@ public class RequestController {
         if (result.getTags() != null && !result.getTags().isEmpty()) {
             headers.add("Tags", String.join(",", result.getTags()));
         }
-        if (result.getMetadataCatalogIdentifiers()!= null && !result.getMetadataCatalogIdentifiers().isEmpty()) {
-            headers.add("Metadata-Catalog-Identifiers", String.join(",", result.getMetadataCatalogIdentifiers()));
-        }
+        // if (result.getMetadataCatalogIdentifiers()!= null && !result.getMetadataCatalogIdentifiers().isEmpty()) {
+        //     headers.add("Metadata-Catalog-Identifiers", String.join(",", result.getMetadataCatalogIdentifiers()));
+        // }
         if (result.getPublishDate() != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(
                     "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);

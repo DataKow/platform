@@ -43,7 +43,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  * Source: http://javattitude.com/2014/05/26/wadl-generator-for-spring-rest/
  */
 @RestController
-@RequestMapping(value={"/", "/metaws/v1"})
+@RequestMapping(value={"/"})
 public class WADL {
     
     String xs_namespace="http://www.w3.org/2001/XMLSchema" ;

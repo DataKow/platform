@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/", "/metaws/v1"})
+@RequestMapping(value = {"/"})
 public class ManagementRequestController {
     
     @Autowired
@@ -67,8 +67,6 @@ public class ManagementRequestController {
             HttpServletResponse response, 
             @RequestParam(value = "Catalog-Identifier") String catalogIdentifier,
             @RequestParam(value = "indexStorageObject", required = false, defaultValue = "true") boolean indexStorageObject,
-            @RequestParam(value = "setDefaultRetentionPolicy", required = false, defaultValue = "false") boolean setDefaultRetentionPolicy,
-            @RequestParam(value = "createCollection", required = false, defaultValue = "true") boolean createCollection,
             @RequestHeader Map<String, String> headers) throws IOException {
         
         logger.info("Received a create catalog request for catalog: " + catalogIdentifier);
@@ -81,7 +79,7 @@ public class ManagementRequestController {
         returnMap.setProperty("Request", "Create Catalog");
         returnMap.setProperty("Catalog-Identifier", catalogIdentifier);
         
-        boolean createCatalogResponse = managementDao.createCatalog(catalogIdentifier, catalogIdentifier, createCollection, indexStorageObject, setDefaultRetentionPolicy, "datakow");
+        boolean createCatalogResponse = managementDao.createCatalog(catalogIdentifier, catalogIdentifier, indexStorageObject, "datakow");
         returnMap.setProperty("Success", createCatalogResponse);
         if (createCatalogResponse){
             CatalogEvent event = new CatalogEvent(EventAction.CREATED);
@@ -496,7 +494,7 @@ public class ManagementRequestController {
     
     private boolean hasAccess(String authorization){
         
-        String correctAuth = "Basic bmdpdHdzOm5naXR3cw==";
+        String correctAuth = "Basic ZGF0YWtvdzpkYXRha293";
         
         return authorization != null && authorization.equals(correctAuth);
         

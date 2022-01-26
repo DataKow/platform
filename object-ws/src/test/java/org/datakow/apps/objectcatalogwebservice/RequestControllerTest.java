@@ -223,7 +223,7 @@ public class RequestControllerTest {
         "\"Publisher\":\"bob\",\r\n" +
         "\"Realm\":\"secret\",\r\n" +
         "\"Tags\":[\"Tagone\",\"tag2\"],\r\n" +
-        "\"Metadata-Catalog-Identifiers\":[\"catalogone\",\"catalog2\"],\r\n" +        
+        //"\"Metadata-Catalog-Identifiers\":[\"catalogone\",\"catalog2\"],\r\n" +        
         "\"Publish-Date\":\"Mon, 24 Apr 2017 17:00:00 GMT\",\r\n" +
         "\"Data\":\"VGVzdCBEYXRh\"}]";
     }
@@ -236,7 +236,7 @@ public class RequestControllerTest {
         "Publisher: bob\r\n" +
         "Realm: secret\r\n" +
         "Tags: Tagone,tag2\r\n" +
-        "Metadata-Catalog-Identifiers: catalogone,catalog2\r\n"+
+        //"Metadata-Catalog-Identifiers: catalogone,catalog2\r\n"+
         "Publish-Date: Mon, 24 Apr 2017 17:00:00 GMT\r\n" +
         "Content-Length: 9\r\n" + 
         "\r\n" +

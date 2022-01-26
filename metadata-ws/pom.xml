@@ -13,7 +13,6 @@
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
     </properties>
 
     <dependencyManagement>
@@ -162,6 +161,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.datakow.catalogs</groupId>
             <artifactId>metadata</artifactId>
             <version>3.2.1-SNAPSHOT</version>
@@ -187,7 +196,7 @@
 					</execution>
 				</executions>
             </plugin>
-            <plugin>
+            <!-- <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <reuseForks>false</reuseForks>
@@ -195,7 +204,7 @@
                     <parallel>classes</parallel>
                     <threadCount>1</threadCount>
                 </configuration>
-            </plugin>
+            </plugin> -->
         </plugins>
     </build>
     

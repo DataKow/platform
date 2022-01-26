@@ -105,7 +105,7 @@ public class TestConfiguration {
         record.setRealm("secret");
         record.setTags(Arrays.asList("Tagone", "tag2"));
         record.setContentLength(9);
-        record.setMetadataCatalogIdentifiers("catalogone", "catalog2");
+        //record.setMetadataCatalogIdentifiers("catalogone", "catalog2");
         InputStream stream = new ByteArrayInputStream("Test Data".getBytes("UTF-8"));
         record.setData(stream);
         return record;

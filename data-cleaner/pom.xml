@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <name>Data Cleaner</name>
+    <groupId>gov.noaa.nws.ngitws.apps</groupId>
+    <artifactId>data-cleaner</artifactId>
+    <packaging>jar</packaging>
+    <version>2.4.2-RELEASE</version>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>gov.noaa.nws.ngitws</groupId>
+            <artifactId>catalogs-metadata</artifactId>
+            <version>3.1.0-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.noaa.nws.ngitws</groupId>
+            <artifactId>catalogs-object</artifactId>
+            <version>3.2.1-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.noaa.nws.ngitws</groupId>
+            <artifactId>configuration-application</artifactId>
+            <version>2.0.3-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.noaa.nws.ngitws</groupId>
+            <artifactId>messaging-events</artifactId>
+            <version>2.1.5-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.noaa.nws.ngitws</groupId>
+            <artifactId>configuration-rabbit</artifactId>
+            <version>2.2.0-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+            <version>1.1.3.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.graylog2.log4j2</groupId>
+            <artifactId>log4j2-gelf</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>1.4.1.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <repositories>
+        <repository>
+            <id>nexus.snapshots</id>
+            <url>http://appsrv2.dev.nids.noaa.gov:8080/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    
+    <distributionManagement>
+        <repository>
+            <id>nexus.internal</id>
+            <name>Internal Release Repository</name>
+            <url>http://nids:nids@appsrv2.dev.nids.noaa.gov:8080/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>http://nids:nids@appsrv2.dev.nids.noaa.gov:8080/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.3.5.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

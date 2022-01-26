@@ -26,7 +26,6 @@ datakow:
     connPerHost: 100
     databaseName: datakow
     objectCatalogCollectionName: DATAKOW_OBJECTS
-    observationStationCollectionName: ObservationStations
     port: 27017
     threadBlockMultiplier: 20
     useAuth: false

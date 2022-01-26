@@ -41,7 +41,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
-import org.bson.BsonValue;
 import org.datakow.catalogs.metadata.BulkResult;
 import org.datakow.catalogs.metadata.Catalog;
 import org.datakow.catalogs.metadata.CatalogRegistry;
@@ -68,7 +67,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/", "/metaws/v1"})
+@RequestMapping(value = {"/"})
 public class RequestController {
     
     @Autowired
@@ -87,8 +86,8 @@ public class RequestController {
     }
 
     @RequestMapping(value="", method = {RequestMethod.GET, RequestMethod.HEAD}, produces = {MediaType.TEXT_PLAIN_VALUE})
-    public ResponseEntity defaultPage(){
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<String> defaultPage(){
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records/{id}", method=RequestMethod.GET, 
@@ -140,10 +139,6 @@ public class RequestController {
             @RequestParam(value = "s", required = false) String fiql, 
             @RequestParam(value = "count", required = false, defaultValue = "false") boolean count,
             @RequestParam(value = "distinct", required = false, defaultValue = "") String distinct,
-            @RequestParam(value = "groupFunc", required = false) List<String> groupFunctions,
-            @RequestParam(value = "groupBy", required = false, defaultValue = "") String groupBy,
-            @RequestParam(value = "groupSort", required = false, defaultValue = "") String groupSort,
-            @RequestParam(value = "geoNear", required = false, defaultValue = "") String geoNear,
             @RequestParam(value = "dataCoherence", required = false, defaultValue = "available") String coherence,
             @RequestParam(value = "pipeline", required = false) String pipeline,
             @RequestHeader Map<String, String> headers) throws IOException{
@@ -175,10 +170,6 @@ public class RequestController {
         
         if (StringUtils.hasText(pipeline)){
             results = metadataCatalogDao.aggregate(collectionName, pipeline, dataCoherence);
-        }else if ((groupFunctions != null && !groupFunctions.isEmpty()) || StringUtils.hasText(geoNear)){
-            results = metadataCatalogDao.aggregate(
-                    collectionName, fiql, sort, limit, projectionList, 
-                    groupBy, groupSort, geoNear, dataCoherence, groupFunctions);
         }else if (!catalogIdentifier.startsWith("DATAKOW_") || StringUtils.hasText(fiql) || limit > 0){
             logger.debug("About to execute query: " + fiql);
             results = metadataCatalogDao.getByQuery(collectionName, fiql, sort, limit, projectionList, dataCoherence);
@@ -211,21 +202,22 @@ public class RequestController {
     
     
     
-    @RequestMapping(value = "/catalogs/{catalogIdentifier}/count", method=RequestMethod.GET, 
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity count(
+    @RequestMapping(
+        value = "/catalogs/{catalogIdentifier}/count", 
+        method=RequestMethod.GET, 
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> count(
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestParam(value = "s", required = false) String fiql,
             @RequestParam(value = "limit", required = false, defaultValue = "0") int limit,
-            @RequestParam(value = "dataCoherence", required = false, defaultValue = "available") String coherence) 
-            throws JsonProcessingException{
+            @RequestParam(value = "dataCoherence", required = false, defaultValue = "available") String coherence) throws JsonProcessingException{
         
         ThreadContext.put("Catalog-Identifier", catalogIdentifier);
         logger.info("Received count : {} : {}", catalogIdentifier, fiql);
         
         MetadataDataCoherence dataCoherence = MetadataDataCoherence.fromString(coherence);
 
-	Catalog catalog = catalogRegistry.getByCatalogIdentifier(catalogIdentifier);
+	    Catalog catalog = catalogRegistry.getByCatalogIdentifier(catalogIdentifier);
         if (catalog == null){
             throw new CatalogDoesNotExistException(catalogIdentifier);
         }
@@ -239,13 +231,15 @@ public class RequestController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Num-Records", String.valueOf(count));
-        return new ResponseEntity("{\"Num-Records\":" + count + "}", headers, HttpStatus.OK);
+        return new ResponseEntity<String>("{\"Num-Records\":" + count + "}", headers, HttpStatus.OK);
         
     }
     
-    @RequestMapping(value = "/catalogs/{catalogIdentifier}/distinct", method=RequestMethod.GET, 
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity distinct(
+    @RequestMapping(
+        value = "/catalogs/{catalogIdentifier}/distinct", 
+        method=RequestMethod.GET, 
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DotNotationMap>> distinct(
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestParam(value="s", required = false) String fiql,
             @RequestParam("distinct") String distinct,
@@ -261,15 +255,15 @@ public class RequestController {
             throw new CatalogDoesNotExistException(catalogIdentifier);
         }
         String collectionName = catalog.getCollectionName();
-        List<Object> results = new ArrayList<Object>();
-        DistinctIterable<Object> values = metadataCatalogDao.distinct(collectionName, distinct, fiql, dataCoherence, Object.class);
+        List<DotNotationMap> results = new ArrayList<>();
+        DistinctIterable<DotNotationMap> values = metadataCatalogDao.distinct(collectionName, distinct, fiql, dataCoherence, DotNotationMap.class);
         values.cursor().forEachRemaining(a -> results.add(a));
-        return new ResponseEntity(results, HttpStatus.OK);
+        return new ResponseEntity<List<DotNotationMap>>(results, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method = RequestMethod.POST, 
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity create(
+    public ResponseEntity<String> create(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestHeader(value = "Record-Identifier", required = false, defaultValue = "") String recordIdentifier,
@@ -310,13 +304,13 @@ public class RequestController {
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setLocation(URI.create("/catalogs/" + catalogIdentifier + "/records/" + record.getStorage().getId()));
-        return new ResponseEntity("{\"id\":\"" + record.getStorage().getId() + "\"}", responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<String>("{\"id\":\"" + record.getStorage().getId() + "\"}", responseHeaders, HttpStatus.CREATED);
         
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method = RequestMethod.POST, 
             produces = MediaType.APPLICATION_JSON_VALUE, headers = {"Operation-Type=bulk"})
-    public ResponseEntity createBulk(
+    public ResponseEntity<String> createBulk(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestHeader(value = "Realm", required=false) String realm,
@@ -358,13 +352,13 @@ public class RequestController {
 
         DatakowObjectMapper mapper = DatakowObjectMapper.getDatakowDateAwareObjectMapper();
         HttpHeaders responseHeaders = new HttpHeaders();
-        return new ResponseEntity(mapper.writeValueAsString(ids), responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(mapper.writeValueAsString(ids), responseHeaders, HttpStatus.OK);
         
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records/{id}", method = RequestMethod.PUT, 
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateById(
+    public ResponseEntity<String> updateById(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @PathVariable("id") String recordIdentifier, 
@@ -410,13 +404,13 @@ public class RequestController {
         }else{
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.setLocation(URI.create("/catalogs/" + catalogIdentifier + "/records/" + recordIdentifier));
-            return new ResponseEntity("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<String>("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
         }
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method = RequestMethod.PUT, 
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateOneByQuery(
+    public ResponseEntity<String> updateOneByQuery(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestParam("s") String fiql,
@@ -457,13 +451,13 @@ public class RequestController {
         }else{
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-            return new ResponseEntity(headers, HttpStatus.OK);
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
         }
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method = RequestMethod.PUT, 
             produces = MediaType.APPLICATION_JSON_VALUE, headers = {"Operation-Type=bulk"})
-    public ResponseEntity updateBulkByParameterizedFilter(
+    public ResponseEntity<String> updateBulkByParameterizedFilter(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier,
             @RequestParam(value = "filter", required=false, defaultValue = "Storage.Record-Identifier=={Storage.Record-Identifier}") String filter,
@@ -508,13 +502,13 @@ public class RequestController {
 
         DatakowObjectMapper mapper = DatakowObjectMapper.getDatakowDateAwareObjectMapper();
         HttpHeaders responseHeaders = new HttpHeaders();
-        return new ResponseEntity(mapper.writeValueAsString(ids), responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(mapper.writeValueAsString(ids), responseHeaders, HttpStatus.OK);
         
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records/{id}", method=RequestMethod.PATCH, 
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = {"application/json-patch+json"})
-    public ResponseEntity jsonPatchById(
+    public ResponseEntity<String> jsonPatchById(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @PathVariable("id") String recordIdentifier) throws IOException {
@@ -531,10 +525,10 @@ public class RequestController {
         }else if(results.get(0).getSuccess() && results.get(0).getActionTaken().equals("updated")){
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.setLocation(URI.create("/catalogs/" + catalogIdentifier + "/records/" + recordIdentifier));
-            return new ResponseEntity("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<String>("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
         }else{
             logger.error("Action-Taken: " + results.get(0).getActionTaken() + ", Error-Message: " + results.get(0).getErrorMessage());
-            return new ResponseEntity(
+            return new ResponseEntity<String>(
                     CustomExceptionHandler.buildErrorMessage(
                             "UNEXPECTED_REPONSE", 
                             "Action-Taken: " + results.get(0).getActionTaken() + ", Error-Message: " + results.get(0).getErrorMessage()),
@@ -545,7 +539,7 @@ public class RequestController {
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method=RequestMethod.PATCH, 
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = {"application/json-patch+json"})
-    public ResponseEntity jsonPatchByQuery(
+    public ResponseEntity<String> jsonPatchByQuery(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @RequestParam("s") String fiql,
@@ -566,14 +560,14 @@ public class RequestController {
         DatakowObjectMapper mapper = DatakowObjectMapper.getDatakowDateAwareObjectMapper();
         HttpHeaders responseHeaders = new HttpHeaders();
         String jsonResponse = mapper.writeValueAsString(ids);
-        return new ResponseEntity(jsonResponse, responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(jsonResponse, responseHeaders, HttpStatus.OK);
         
         
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records/{id}", method=RequestMethod.PATCH, 
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = {"application/merge-patch+json"})
-    public ResponseEntity mergePatchById(
+    public ResponseEntity<String> mergePatchById(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @PathVariable("id") String recordIdentifier) throws IOException {
@@ -599,7 +593,7 @@ public class RequestController {
         HttpHeaders responseHeaders = new HttpHeaders();
         if (result.getModifiedCount() > 0){
             responseHeaders.setLocation(URI.create("/catalogs/" + catalogIdentifier + "/records/" + recordIdentifier));
-            return new ResponseEntity("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
+            return new ResponseEntity<String>("{\"id\":\"" + recordIdentifier + "\"}", responseHeaders, HttpStatus.OK);
         }else{
             throw new RecordNotFoundException(new CatalogIdentity(catalogIdentifier, recordIdentifier));
         }
@@ -608,7 +602,7 @@ public class RequestController {
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records", method=RequestMethod.PATCH, 
             produces = MediaType.APPLICATION_JSON_VALUE, consumes = {"application/merge-patch+json"})
-    public ResponseEntity mergePatchByQuery(
+    public ResponseEntity<String> mergePatchByQuery(
             HttpServletRequest request,
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @RequestParam("s") String fiql,
@@ -643,13 +637,13 @@ public class RequestController {
             status = HttpStatus.NOT_FOUND;
         }
         headers.add("Num-Updated", Long.toString(result.getModifiedCount()));
-        return new ResponseEntity("{\"numUpdated\":" + result.getModifiedCount() + "}", headers, status);
+        return new ResponseEntity<String>("{\"numUpdated\":" + result.getModifiedCount() + "}", headers, status);
         
     }
     
     @RequestMapping(value = "/catalogs/{catalogIdentifier}/records/{id}", method = RequestMethod.DELETE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity deleteById(
+    public ResponseEntity<String> deleteById(
             @PathVariable("catalogIdentifier") String catalogIdentifier, 
             @PathVariable("id") String recordIdentifier) throws IOException {
 

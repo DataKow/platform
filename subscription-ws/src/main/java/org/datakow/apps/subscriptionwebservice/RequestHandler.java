@@ -32,7 +32,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.datakow.catalogs.metadata.MetadataCatalogRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +51,7 @@ import springfox.documentation.annotations.ApiIgnore;
  */
 @RestController
 @CrossOrigin
-@RequestMapping(value = {"/subws/v1", "/"})
-@Import({SwaggerConfig.class})
+@RequestMapping(value = {"/"})
 public class RequestHandler {
 
     @Autowired
@@ -126,7 +124,7 @@ public class RequestHandler {
         }
     }
     
-    @RequestMapping(value = "/subscriptions/users/{username:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/users/{username:.+}/subscriptions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QueryStringSubscription>> getByUsername(
             @ApiParam(value = "The username to filter by") 
             @PathVariable("username") String username) throws JsonProcessingException, IOException{
@@ -138,7 +136,7 @@ public class RequestHandler {
         return new ResponseEntity<>(subs, HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/subscriptions/catalogs/{catalogIdentifier:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/catalogs/{catalogIdentifier:.+}/subscriptions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QueryStringSubscription>> getByCatalogIdentifier(
             @ApiParam(value = "The catalog identififer to filter on") 
             @PathVariable("catalogIdentifier") String catalogIdentifier) throws JsonProcessingException, IOException{
@@ -150,7 +148,7 @@ public class RequestHandler {
         return new ResponseEntity<>(subs, HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/subscriptions/endpoints/{endpointIdentifier:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/endpoints/{endpointIdentifier:.+}/subscriptions", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QueryStringSubscription>> getByEndpointIdentifier(
             @ApiParam(value = "The endpoint identifier to filter on") 
             @PathVariable("endpointIdentifier") String endpointIdentifier) throws JsonProcessingException, IOException{
